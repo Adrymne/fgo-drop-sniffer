@@ -3,29 +3,30 @@
 import json
 import fileinput
 import sys
+from jsonpath_rw import jsonpath, parse
 
 class DropManager:
     def __init__(self, file):
         self.index = json.load(open(file, 'r'))
 
     def item(self, drop):
-        id = str(drop["objectId"])
+        id = str(drop.get("objectId"))
         if id == "1":
-            return "{0} QP".format(drop["num"])
+            return "{0} QP".format(drop.get("num"))
         elif id in self.index:
-            item = self.index[id]
-            result = item["name"] 
-            #if "jpName" in item:
-            #    result += u" ({0})".format(item["jpName"])
-            return result
-        else: 
-            return "Unknown item (ID: {0})".format(id)
+            item = self.index.get(id)
+            if item and 'name' in item:
+                return item.get('name')
+
+        return "Unknown item (ID: {0})".format(id)
 
 items = DropManager('dropIds.json')
 
 class Parser:
     def __init__(self):
         self.body = None
+        self.path = parse('cache.replaced.battle[*].battleInfo.enemyDeck[*]'
+                          '.svts[*].dropInfos[*]')
 
     def start(self):
         self.body = ''
@@ -44,17 +45,15 @@ class Parser:
         # Get drop ids from response body
         drops = []
         res = json.loads(self.body)
-        for battle in res["cache"]["replaced"]["battle"]:
-            for deck in battle["battleInfo"]["enemyDeck"]:
-                for svt in deck["svts"]:
-                    drops.extend([items.item(drop) for drop in svt["dropInfos"]])
+        drops = [items.item(match.value) for match in self.path.find(res)]
         # Print out drops
         print "-" * 20
         if len(drops) == 0:
             print "[No drops]"
-
-        for drop in drops:
-            print drop
+        else: 
+            for drop in drops:
+                print drop
+        # Mark end of parse
         self.body = None
 
 parser = Parser()
