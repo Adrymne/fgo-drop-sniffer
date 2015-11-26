@@ -333,5 +333,20 @@
         "9400540": {
                 "name": "Maid in Halloween",
                 "jpName": "メイド・イン・ハロウィン"
+        },
+        "94000901": {
+                "name": "Tsukumogami Nasu",
+                "jpName": "九十九髪茄子"
+        },
+        "94000902": {
+                "name": "Youhen Tenmoku Chawan",
+                "jpName": "曜変天目茶碗"
+        },
+        "94000903": {
+                "name": "Hiragumo",
+                "jpName": "平蜘蛛"
+        },
+        "94000904": {
+                "name": "Honnoji Point"
         }
 }

@@ -23,14 +23,20 @@ class DropManager:
         Takes a JSON object describing an item that dropped, and returns a
         string describing it."""
         id = str(drop.get("objectId"))
+        result = ''
         if id == "1":
-            return "{0} QP".format(drop.get("num"))
-        elif id in self.index:
-            item = self.index.get(id)
-            if item and 'name' in item:
-                return '{0} x{1}'.format(item.get('name'), drop.get('num'))
+            result += 'QP'
+            #return "{0} QP".format(drop.get("num"))
+        elif id in self.index and 'name' in self.index.get(id):
+            result += self.index.get(id).get('name')
+        else:
+            result += 'Unknown item (ID: {0})'.format(id)
 
-        return "Unknown item (ID: {0})".format(id)
+        if drop.get('num') > 1:
+            result += ' x{0}'.format(drop.get('num'))
+
+        return result
+
 
 items = DropManager()
 
@@ -82,8 +88,10 @@ class Parser:
 
 parser = Parser()
 
+log = open('lastSession', 'w')
 while True:
     line = sys.stdin.readline()
+    log.write(line)
 
     if 'Uncompressed entity body' in line:
         parser.start()
