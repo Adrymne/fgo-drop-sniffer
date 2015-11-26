@@ -28,7 +28,7 @@ class DropManager:
         elif id in self.index:
             item = self.index.get(id)
             if item and 'name' in item:
-                return item.get('name')
+                return '{0} x{1}'.format(item.get('name'), drop.get('num'))
 
         return "Unknown item (ID: {0})".format(id)
 
