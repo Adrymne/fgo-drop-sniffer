@@ -5,6 +5,8 @@ import fileinput
 import sys
 from jsonpath_rw import jsonpath, parse
 
+log = open('lastSession', 'w')
+
 class DropManager:
     """Manages item information.
 
@@ -72,9 +74,11 @@ class Parser:
         """Mark input as complete, parse it and output drop information."""
         if self.body is None:
             return
+        # Get response body
+        body = self.body[self.body.find("{"):]
         # Get drop ids from response body
         drops = []
-        res = json.loads(self.body)
+        res = json.loads(body)
         drops = [items.item(match.value) for match in self.path.find(res)]
         # Print out drops
         print "-" * 20
@@ -88,12 +92,10 @@ class Parser:
 
 parser = Parser()
 
-log = open('lastSession', 'w')
 while True:
     line = sys.stdin.readline()
-    log.write(line)
 
-    if 'Uncompressed entity body' in line:
+    if 'Reassembled' in line:
         parser.start()
     elif not line.strip():
         parser.end()
